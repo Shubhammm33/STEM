@@ -821,22 +821,67 @@
         });
     }
 
+   const allStudentData = [
+        { id: 'stud1', name: 'Priya Sharma', progress: { stemVillage: 2, knowledgeBattle: 1250, buildLab: true } },
+        { id: 'stud2', name: 'Rohan Singh', progress: { stemVillage: 1, knowledgeBattle: 1100, buildLab: false } },
+        { id: 'stud3', name: 'Aisha Khan', progress: { stemVillage: 3, knowledgeBattle: 980, buildLab: true } },
+        { id: 'stud4', name: 'Vikram Mehta', progress: { stemVillage: 0, knowledgeBattle: 450, buildLab: false } }
+    ];
+
+    function renderTeacherDashboard() {
+        const container = document.getElementById('student-progress-container');
+        container.innerHTML = ''; // Clear previous content
+
+        allStudentData.forEach(student => {
+            const card = document.createElement('div');
+            card.className = 'bg-slate-50 border rounded-lg p-4 shadow';
+
+            const name = document.createElement('h3');
+            name.className = 'text-lg font-bold text-slate-700';
+            name.innerText = student.name;
+
+            const villageProgress = document.createElement('p');
+            villageProgress.className = 'text-sm text-slate-600 mt-2';
+            villageProgress.innerText = `STEM Village: ${student.progress.stemVillage} / 3 buildings unlocked`;
+
+            const battleProgress = document.createElement('p');
+            battleProgress.className = 'text-sm text-slate-600';
+            battleProgress.innerText = `Knowledge Battle High Score: ${student.progress.knowledgeBattle}`;
+            
+            const labProgress = document.createElement('p');
+            labProgress.className = 'text-sm text-slate-600';
+            const labStatus = student.progress.buildLab ? 'Completed ✅' : 'Not Completed ❌';
+            labProgress.innerText = `Virtual Lab Circuit: ${labStatus}`;
+
+            card.appendChild(name);
+            card.appendChild(villageProgress);
+            card.appendChild(battleProgress);
+            card.appendChild(labProgress);
+            
+            container.appendChild(card);
+        });
+    }
+
     function exportData() {
-        const data = [
-            ["student_id", "activity_date", "mode", "score", "time_spent_min"],
-            ["S001", "2025-09-18", "STEM Village", "80", "15"],
-            ["S002", "2025-09-18", "Knowledge Battle", "120", "10"],
-            ["S001", "2025-09-19", "Virtual Lab", "100", "20"],
-            ["S003", "2025-09-19", "STEM Village", "90", "25"]
-        ];
+        const headers = ["student_id", "student_name", "stem_village_unlocked", "knowledge_battle_score", "build_lab_completed"];
+        const rows = allStudentData.map(student => 
+            [
+                student.id,
+                student.name,
+                student.progress.stemVillage,
+                student.progress.knowledgeBattle,
+                student.progress.buildLab
+            ].join(',')
+        );
 
         let csvContent = "data:text/csv;charset=utf-8," 
-            + data.map(e => e.join(",")).join("\n");
+            + headers.join(",") + "\n"
+            + rows.join("\n");
 
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "student_data_export.csv");
+        link.setAttribute("download", "student_progress_export.csv");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
